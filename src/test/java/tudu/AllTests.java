@@ -8,7 +8,7 @@ import tudu.domain.model.TodoTest;
 import tudu.integration.IntegrationTest;
 import tudu.security.UserDetailsServiceImplTest;
 import tudu.service.impl.ConfigurationServiceImplTest;
-import tudu.service.impl.TodoListsServiceImplTest;
+import tudu.service.impl.TodoListsServiceImpl_Old_Test;
 import tudu.service.impl.TodosServiceImplTest;
 import tudu.service.impl.UserServiceImplTest;
 import tudu.web.dwr.impl.TodoListsDwrImplTest;
@@ -34,7 +34,7 @@ import tudu.web.servlet.RssFeedServletTest;
         IntegrationTest.class,
         UserDetailsServiceImplTest.class,
         ConfigurationServiceImplTest.class,
-        TodoListsServiceImplTest.class,
+        TodoListsServiceImpl_Old_Test.class,
         TodosServiceImplTest.class,
         UserServiceImplTest.class,
         TodoListsDwrImplTest.class,
