@@ -43,42 +43,33 @@ public class AdministrationController {
 
         if (page.equals("configuration")) {
             mv.addObject("page", "configuration");
-            String propertyStaticPath = this.configurationService.getProperty(
-                    "application.static.path").getValue();
 
+            String propertyStaticPath = this.configurationService.getProperty("application.static.path").getValue();
             model.setPropertyStaticPath(propertyStaticPath);
 
-            String googleAnalyticsKey = configurationService.getProperty(
-                    "google.analytics.key").getValue();
-
+            String googleAnalyticsKey = configurationService.getProperty("google.analytics.key").getValue();
             model.setGoogleAnalyticsKey(googleAnalyticsKey);
 
-            String smtpHost = configurationService.getProperty("smtp.host")
-                    .getValue();
+            String smtpHost = configurationService.getProperty("smtp.host").getValue();
             model.setSmtpHost(smtpHost);
 
-            String smtpPort = configurationService.getProperty("smtp.port")
-                    .getValue();
+            String smtpPort = configurationService.getProperty("smtp.port").getValue();
             model.setSmtpPort(smtpPort);
 
-            String smtpUser = configurationService.getProperty("smtp.user")
-                    .getValue();
+            String smtpUser = configurationService.getProperty("smtp.user").getValue();
             model.setSmtpUser(smtpUser);
 
-            String smtpPassword = configurationService.getProperty(
-                    "smtp.password").getValue();
+            String smtpPassword = configurationService.getProperty("smtp.password").getValue();
             model.setSmtpPassword(smtpPassword);
 
-            String smtpFrom = configurationService.getProperty("smtp.from")
-                    .getValue();
+            String smtpFrom = configurationService.getProperty("smtp.from").getValue();
             model.setSmtpFrom(smtpFrom);
 
 
         } else if (page.equals("users")) {
             mv.addObject("page", "users");
             model.setSearchLogin("");
-            mv.addObject("numberOfUsers", this.userService
-                    .getNumberOfUsers());
+            mv.addObject("numberOfUsers", this.userService.getNumberOfUsers());
 
         }
         mv.addObject("administrationModel", model);
@@ -96,8 +87,13 @@ public class AdministrationController {
             this.configurationService.updateApplicationProperties(model.getPropertyStaticPath(),
                     model.getGoogleAnalyticsKey());
 
-            this.configurationService.updateEmailProperties(model.getSmtpHost(), model.getSmtpPort(),
-                    model.getSmtpUser(), model.getSmtpPassword(), model.getSmtpFrom());
+            this.configurationService.updateEmailProperties(
+                    model.getSmtpHost(),
+                    model.getSmtpPort(),
+                    model.getSmtpUser(),
+                    model.getSmtpPassword(),
+                    model.getSmtpFrom()
+            );
 
             mv = this.display("configuration");
             mv.addObject("success", "true");

@@ -1,11 +1,139 @@
 package tudu.web.mvc;
 
-/**
- * Created by IntelliJ IDEA.
- * User: brice
- * Date: 22/05/11
- * Time: 19:42
- * To change this template use File | Settings | File Templates.
- */
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.web.servlet.ModelAndView;
+import tudu.domain.Property;
+import tudu.service.ConfigurationService;
+import tudu.service.UserService;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
 public class AdministrationControllerTest {
+
+    @Mock private ConfigurationService cfgService;
+    @Mock private UserService userService;
+
+    @InjectMocks private AdministrationController admnController = new AdministrationController();
+
+    @Test
+    public void display_should_return_a_nonnull_model() throws Exception {
+        assertThat(admnController.display("somepage")).isNotNull();
+        // don't break; didn't try hard enough
+    }
+
+    @Test
+    public void display_should_not_interact_when_page_different_than_configuration_or_users() throws Exception {
+        assertThat(admnController.display("somepage")).isNotNull();
+
+        verifyZeroInteractions(cfgService, userService);
+    }
+
+    @Test
+    public void display_should_put_smtp_config_properties_in_admin_model_when_page_is_configuration() throws Exception {
+        // given
+        given(cfgService.getProperty(anyString())).willReturn(property("whatever"));
+
+        given(cfgService.getProperty("smtp.host")).willReturn(property("the host"));
+        given(cfgService.getProperty("smtp.port")).willReturn(property("the port"));
+        given(cfgService.getProperty("smtp.user")).willReturn(property("the user"));
+        given(cfgService.getProperty("smtp.password")).willReturn(property("the pass"));
+        given(cfgService.getProperty("smtp.from")).willReturn(property("from"));
+
+
+        // when
+        ModelAndView mv = admnController.display("configuration");
+
+
+        // then
+        verifyZeroInteractions(userService);
+        assertThat(mv.getModelMap().get("page")).isEqualTo("configuration");
+
+        AdministrationModel adminModel = (AdministrationModel) mv.getModelMap().get("administrationModel");
+        assertThat(adminModel.getSmtpHost()).isEqualTo("the host");
+        assertThat(adminModel.getSmtpPort()).isEqualTo("the port");
+        assertThat(adminModel.getSmtpUser()).isEqualTo("the user");
+        assertThat(adminModel.getSmtpPassword()).isEqualTo("the pass");
+        assertThat(adminModel.getSmtpFrom()).isEqualTo("from");
+    }
+
+
+    @Test
+    public void update_shouldnt_return_a_null_model() throws Exception {
+        AdministrationModel adminModel = new AdministrationModel();
+        adminModel.setAction("whatever");
+        assertThat(admnController.update(adminModel));
+    }
+
+    @Test
+    public void update_should_update_smtp_config() throws Exception {
+        // given
+        AdministrationController spiedAdmnController = spy(admnController);
+        willReturn(new ModelAndView()).given(spiedAdmnController).display(anyString());
+        AdministrationModel adminModel = new AdministrationModel();
+        adminModel.setAction("configuration");
+
+
+        // when
+        spiedAdmnController.update(adminModel);
+
+        // then
+        verify(cfgService).updateEmailProperties(
+                anyString(),
+                anyString(),
+                anyString(),
+                anyString(),
+                anyString()
+        );
+
+        verifyZeroInteractions(userService);
+    }
+
+    @Test
+    public void update_can_enable_user() throws Exception {
+        AdministrationModel adminModel = new AdministrationModel();
+        adminModel.setAction("enableUser");
+        adminModel.setLogin("Paterne");
+
+        admnController.update(adminModel);
+
+        verify(userService).enableUser("Paterne");
+    }
+
+    @Test
+    public void update_can_disable_user() throws Exception {
+        AdministrationModel adminModel = new AdministrationModel();
+        adminModel.setAction("disableUser");
+        adminModel.setLogin("Bob");
+
+        admnController.update(adminModel);
+
+        verify(userService).disableUser("Bob");
+    }
+
+    @Test
+    public void update_should_fetch_users_on_login_() throws Exception {
+        AdministrationModel adminModel = new AdministrationModel();
+        adminModel.setAction("disableUser");
+        adminModel.setLogin("Bob");
+
+        admnController.update(adminModel);
+
+        verify(userService).disableUser("Bob");
+    }
+
+    private Property property(String value) {
+        Property property = new Property();
+        property.setValue(value);
+        return property;
+    }
 }
