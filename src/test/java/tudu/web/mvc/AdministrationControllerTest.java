@@ -46,7 +46,7 @@ public class AdministrationControllerTest {
         // given config service not stubbed
 
         // when
-        ModelAndView mv = adminController.display("configuration");
+        adminController.display("configuration");
     }
 
     @Test
@@ -122,7 +122,7 @@ public class AdministrationControllerTest {
     }
 
     @Test
-    public void update_can_enable_user() throws Exception {
+    public void update_enable_user_on_enableUser_action() throws Exception {
         AdministrationModel adminModel = new AdministrationModel();
         adminModel.setAction("enableUser");
         adminModel.setLogin("Paterne");
@@ -134,7 +134,7 @@ public class AdministrationControllerTest {
     }
 
     @Test
-    public void update_can_disable_user() throws Exception {
+    public void update_can_disable_user_on_disableUser_action() throws Exception {
         AdministrationModel adminModel = new AdministrationModel();
         adminModel.setAction("disableUser");
         adminModel.setLogin("Bob");
