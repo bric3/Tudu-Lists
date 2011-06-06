@@ -44,6 +44,37 @@ public class TodoListsServiceImpl implements TodoListsService {
     private UserService userService;
 
     /**
+     * Delete a Todo List.
+     *
+     * @see tudu.service.TodoListsService#deleteTodoList(java.lang.String)
+     *
+     * Niveau 1 à 2
+     * - Faire un mock partiel pour faire fonctionner le code et retourner une TodoList de 4 todo.
+     * - S'assurer qu'il y a bien un remove sur chaque Todo et sur la Todolist
+     *
+     * Niveau 2
+     * - Faire lever à l'entity manager une exception quelconque sur le remove du 3eme Todo et s'assurer qu'il n'y a pas d'interactions pour les autres todo
+     *
+     */
+    public void deleteTodoList(final String listId) {
+        TodoList todoList = this.findTodoList(listId);
+        for (User user : todoList.getUsers()) {
+            user.getTodoLists().remove(todoList);
+        }
+        for (Todo todo : todoList.getTodos()) {
+            em.remove(todo.getTodoId());
+        }
+        em.remove(listId);
+    }
+
+
+
+
+
+
+
+
+    /**
      * Create a new Todo List.
      *
      * @see tudu.service.TodoListsService#createTodoList(tudu.domain.TodoList)
@@ -96,22 +127,6 @@ public class TodoListsServiceImpl implements TodoListsService {
      */
     public void updateTodoList(final TodoList todoList) {
         todoList.setLastUpdate(Calendar.getInstance().getTime());
-    }
-
-    /**
-     * Delete a Todo List.
-     *
-     * @see tudu.service.TodoListsService#deleteTodoList(java.lang.String)
-     */
-    public void deleteTodoList(final String listId) {
-        TodoList todoList = this.findTodoList(listId);
-        for (User user : todoList.getUsers()) {
-            user.getTodoLists().remove(todoList);
-        }
-        for (Todo todo : todoList.getTodos()) {
-            em.remove(todo.getTodoId());
-        }
-        em.remove(listId);
     }
 
     /**
